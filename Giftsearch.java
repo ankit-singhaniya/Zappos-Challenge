@@ -16,11 +16,11 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-
 /**
  * @author Ankit Singhaniya
  */
 public class GiftSearch {
+
     private final Locale currentLocale = Locale.getDefault();
     private float epsilon = Float.MAX_VALUE;
     private static final String PRICE_REGEX = "^\\$?(([1-9][0-9]{0,2}(,[0-9]{3})*)|[0-9]+)?\\.[0-9]{1,2}$";
@@ -30,7 +30,9 @@ public class GiftSearch {
         pattern = Pattern.compile(PRICE_REGEX);
     }
 
-    /** Main Function (Entry Point to User Application)
+    /**
+     * Main Function (Entry Point to User Application)
+     *
      * @param args the command line arguments
      * @throws java.io.IOException
      */
@@ -55,46 +57,52 @@ public class GiftSearch {
         //TODO: Restrict The Queried Fields only to ProductId, StyleId, Price, Product Name.
         //TODO: Using JSON Objects on the result set.
         //TODO: Sort Addtionally by preference/relevance.
-        URL url = new URL("http://api.zappos.com/Search?term=&sort={\"price\":\"desc\"}&key=52ddafbe3ee659bad97fcce7c53592916a6bfd73");
-        try (InputStream is = url.openStream();
-                JsonReader rdr = Json.createReader(is);) {
-            JsonObject obj = rdr.readObject();
-            JsonArray results = obj.getJsonArray("results");
+        boolean moreData = true;
+        int page = 0;
+        while (moreData && page<10) {
+            URL url = new URL("http://api.zappos.com/Search?term=&sort={\"price\":\"desc\"}&limit=100&key=52ddafbe3ee659bad97fcce7c53592916a6bfd73&page=" + page);
+            page++;
+            try (InputStream is = url.openStream();
+                    JsonReader rdr = Json.createReader(is);) {
+                JsonObject obj = rdr.readObject();
+                JsonArray results = obj.getJsonArray("results");
 
-            // check if statusCode is 200
-            int statusCode = Integer.parseInt(obj.getString("statusCode"));
-            if (statusCode == 200) {
-                for (JsonObject result : results.getValuesAs(JsonObject.class)) {
-                    float cost = getCurrencyValue(result.getString("price"));
-                    if (cost < price) {
-                        products.add(new Product(result.getString("productId"), result.getString("styleId"), result.getString("productName"), cost));
+                // check if statusCode is 200
+                int statusCode = Integer.parseInt(obj.getString("statusCode"));
+                if (statusCode == 200 && results != null && results.size() > 0) {
+                    for (JsonObject result : results.getValuesAs(JsonObject.class)) {
+                        float cost = getCurrencyValue(result.getString("price"));
+                        if (cost < price) {
+                            products.add(new Product(result.getString("productId"), result.getString("styleId"), result.getString("productName"), cost));
+                        }
                     }
-                }
-
-                //Find Solution with Minimum Slack
-                //Could be done much better given Slack Value (Definite)
-                //A variation of approximation Subset Sum Algorithm can be implemented.
-                //Present Solution searches brute force for the best possible solution. (Issue with Scalability, Runtime).
-                //Dynamic Programming may also not be used unless value of prices are known to be restricted. (Memory Limitaions).
-                ArrayList<Product> solution = findSolution(products, quantity, price, new ArrayList<Product>(), 0);
-                if (solution != null) {
-                    System.out.println("Found Solution as close as " + getCurrency(epsilon) + " from given price");
-                    for (int i = 0; i < solution.size(); i++) {
-                        System.out.println("Product:\t" + i);
-                        System.out.println("ProductId:\t" + solution.get(i).getId());
-                        System.out.println("StyleId:\t" + solution.get(i).getStyleId());
-                        System.out.println("ProductName:\t" + solution.get(i).getName());
-                        System.out.println("Price:\t" + getCurrency(solution.get(i).getPrice()));
-                        System.out.print("\n");
-                    }
+                } else if (statusCode != 200) {
+                    System.out.println("Error: " + statusCode + "\nCommunicating with the server failed.");
                 } else {
-                    System.out.println("No Solution exists for given constraints");
+                    moreData = false;
                 }
-            } else {
-                System.out.println("Error: " + statusCode + "\nCommunicating with the server failed.");
             }
-
         }
+        //Find Solution with Minimum Slack
+        //Could be done much better given Slack Value (Definite)
+        //A variation of approximation Subset Sum Algorithm can be implemented.
+        //Present Solution searches brute force for the best possible solution. (Issue with Scalability, Runtime).
+        //Dynamic Programming may also not be used unless value of prices are known to be restricted. (Memory Limitaions).
+        ArrayList<Product> solution = findSolution(products, quantity, price, new ArrayList<Product>(), 0);
+        if (solution != null) {
+            System.out.println("Found Solution as close as " + getCurrency(epsilon) + " from given price");
+            for (int i = 0; i < solution.size(); i++) {
+                System.out.println("Product:\t" + i);
+                System.out.println("ProductId:\t" + solution.get(i).getId());
+                System.out.println("StyleId:\t" + solution.get(i).getStyleId());
+                System.out.println("ProductName:\t" + solution.get(i).getName());
+                System.out.println("Price:\t" + getCurrency(solution.get(i).getPrice()));
+                System.out.print("\n");
+            }
+        } else {
+            System.out.println("No Solution exists for given constraints");
+        }
+
     }
 
     private ArrayList<Product> findSolution(ArrayList<Product> products, int quantity, float price, ArrayList<Product> selectedProducts, int x) {
