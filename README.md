@@ -5,7 +5,13 @@ Date: 10/03/2014
 ================
 
 Application using REST API from Zappos
-Uses javax.json-1.0.4 library package.
+Uses: javax.json-1.0.4 library package (and requires jdk8.0.2)
+
+To Compile in Windows, Run: javac -cp *.jar *.java
+To execute, run the following: java -cp .;./javax.json-1.0.4.jar GiftSearch
+
+In Linux, to compile, Run: javac –cp *.jar *.java
+To execute, run the following: java -cp .:./javax.json-1.0.4.jar GiftSearch
 
 
 Section 1: 
