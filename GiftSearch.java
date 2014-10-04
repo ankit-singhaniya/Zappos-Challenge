@@ -76,7 +76,7 @@ public class GiftSearch {
         try {
             search.getGiftSuggestions(price, quantity);
         } catch (IOException ex) {
-            Logger.getLogger(CostSearch.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GiftSearch.class.getName()).log(Level.SEVERE, null, ex);
         }
         printTimeElapsed("Total Execution Time: ", startTime);
     }
