@@ -7,13 +7,18 @@ Date: 10/03/2014
 Application using REST API from Zappos
 Uses javax.json-1.0.4 library package.
 
-Section 1: Introduction
+
+Section 1: 
+Introduction
+
 This project proposes a solution to Zappos Challenge with the following problem statement:
 "The application should take both inputs and leverage the Zappos API (http://developer.zappos.com/docs/api-documentation) to create a list of Zappos products whose combined values match as closely as possible to X dollars."
 
 
 
-Section 1.1: Execution
+Section 1.1: 
+Execution
+
 The program accepts 2 command line arguments, in order:
 1. Number of items in the gift
 2. Total value of the gift
@@ -21,7 +26,9 @@ Note that the default values are set to $10,000.00 and 10 respectively.
 
 
 
-Section 2: Algorithm
+Section 2: 
+Algorithm
+
 The algorithm combines two distinct approaches:
 1. Exhaustive Search on Small Sets
 2. Probabilistic Search on subset of the product range.
@@ -30,7 +37,10 @@ To choose a effective range of products for probabilistic approach, I consider t
 1. Choose Top k products, in decreasing order of its popularity
 2. Trim Products List further, as mentioned below.
 
-Section 2.1: Trimming
+
+Section 2.1: 
+Trimming
+
 The solution trims product sets according to the value of the gift and the quantity of items.
 1. Rejects products of value > gift value
 2. Rejects all products value < ((average gift value)/ConstantFactor)
@@ -41,7 +51,10 @@ Total Value = $10,000.0 and Number of Items = 2
 Size of original Data Set (Products) with price < $10,000.00: 78199
 Size of Trimmed Data Set (Products) additionally with price > $1,000: 2308
 
-Section 2.2: Choosing Data Set
+
+Section 2.2: 
+Choosing Data Set
+
 Subsets of data could be chosen in either of the two ways:
 1. Choose Top k popular products
 2. For all the product prices (products ordered in decreasing order of its popularity), do the following:
@@ -51,7 +64,10 @@ Subsets of data could be chosen in either of the two ways:
 
 In the submission, choice (1) is made primarily because of the cost involved in making REST API calls to get all (1.2million) product details, 100 at a time. Consideration of approach (2) is one of the improvement to the data considered but involves runtime cost.
 
-Section 2.3: Tuning
+
+Section 2.3: 
+Tuning
+
 The algorithm is all about tuning the defined model parameters to gain maximum accuracy.
 One way is by using normalized range of product prices. Another approach could be to increase the number of random hits.
 In the submission, I have examined the model for few optimizations on the parameters and not forgetting about the Time and Memory constraints.
@@ -59,7 +75,9 @@ In the submission, I have examined the model for few optimizations on the parame
 
 
 
-Section 3: Results
+Section 3: 
+Results
+
 In cases where the set of products is small, or the quantity of items in the gift is less, we go for the exhaustive search technique which guarantees to return optimal solutions. For larger inputs, the probabilistic model works best by looking only at a finite subset of data to make decisions. Since the data are repetitive in our case (product cost), it makes sense to take subset.
 
 Below is Snapshot of the "Minimized" Output:
@@ -104,7 +122,9 @@ Total Execution Time: 00 Hrs 00 Mins 21 Secs
 
 
 
-Section 4: Further Improvements
+Section 4: 
+Further Improvements
+
 There are definitely further scope of improvement to this algorithm
 1. One of it could be to attempt building a pre-learned model, that caches important statistics about the data beneath it.
 2. Fine tune the parameters
