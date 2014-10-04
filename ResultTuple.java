@@ -1,12 +1,12 @@
-/* Created for an Entry Level Challlenge for Zappos Summer Internship 2015.
+/* Created for an Entry Level Challenge for Zappos Summer Internship 2015.
  */
-package giftsearch;
 
 import java.util.ArrayList;
 
 /**
  *
- * @author Ankit
+ * @author Ankit Singhaniya
+ * @University of Southern California
  */
 public class ResultTuple implements Comparable {
 
