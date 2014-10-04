@@ -133,7 +133,7 @@ public class GiftSearch {
             System.out.println("Exiting...");
         } else {
             int solutionSize = 0;
-            ArrayList<PartialResult> solutions = new ArrayList<>();
+            ArrayList<ResultTuple> solutions = new ArrayList<>();
             startTime = getStartTime();
 
             //Only if it is computationally heavy to take subsets of this set.
@@ -145,7 +145,7 @@ public class GiftSearch {
                 }
                 for (int i = 0; i < NUMBER_OF_SOLUTIONS; i++) {
                     Collections.shuffle(allProducts);
-                    PartialResult res = findSolution(peekSetSize, quantity, giftPrice);
+                    ResultTuple res = findSolution(peekSetSize, quantity, giftPrice);
                     if (res != null && !solutions.contains(res)) {
                         solutions.add(res);
                     }
@@ -155,7 +155,7 @@ public class GiftSearch {
                     solutionSize = solutions.size();
                 }
             } else {
-                PartialResult res = findSolution(allProducts.size(), quantity, giftPrice);
+                ResultTuple res = findSolution(allProducts.size(), quantity, giftPrice);
                 if (res != null && !solutions.contains(res)) {
                     solutions.add(res);
                 }
@@ -183,7 +183,7 @@ public class GiftSearch {
      * Restrictions on Sub-Set: Size o subset is fixed = Quantity
      * Total Cost To be As close as possible to price.
      */
-    private PartialResult findSolution(int problemSize, int quantity, float price) {
+    private ResultTuple findSolution(int problemSize, int quantity, float price) {
         ArrayList<Product> solution = new ArrayList<>();
         float minPrice = Float.MAX_VALUE;
         int[] permutation = initializePermutations(problemSize, quantity);
@@ -212,7 +212,7 @@ public class GiftSearch {
             }
         } while (nextPermutation(permutation));
         if (minPrice != Float.MAX_VALUE) {
-            return new PartialResult(solution, minPrice);
+            return new ResultTuple(solution, minPrice);
         }
         return null;
     }
@@ -225,7 +225,7 @@ public class GiftSearch {
         }
     }
 
-    private void printSolutions(ArrayList<PartialResult> solutions, int solutionSize) {
+    private void printSolutions(ArrayList<ResultTuple> solutions, int solutionSize) {
         if (solutions != null) {
             Collections.sort(solutions);
             for (int i = 0; i < solutionSize; i++) {
@@ -256,8 +256,8 @@ public class GiftSearch {
     }
 
     /**
-     * Note that this method is not written by me.
-     * Source: http://nayuki.eigenstate.org/page/next-lexicographical-permutation-algorithm
+     * Note that this method is not written by me. Source:
+     * http://nayuki.eigenstate.org/page/next-lexicographical-permutation-algorithm
      * Computes the next lexicographical permutation of the specified array of
      * integers in place, returning whether a next permutation existed. (Returns
      * {@code false} when the argument is already the last possible
